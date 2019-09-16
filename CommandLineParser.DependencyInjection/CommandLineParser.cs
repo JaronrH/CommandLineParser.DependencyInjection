@@ -13,11 +13,9 @@ namespace CommandLineParser.DependencyInjection
         private static readonly Type ExecuteCommandLineOptionsInterfaceType = typeof(IExecuteCommandLineOptions<,>);
         private readonly Type[] _commandLineOptionTypes;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEnumerable<ICommandLineOptions> _commandLineOptions;
 
         public CommandLineParser(IEnumerable<ICommandLineOptions> commandLineOptions, IServiceProvider serviceProvider)
         {
-            _commandLineOptions = commandLineOptions;
             _commandLineOptionTypes = commandLineOptions.Select(i => i.GetType()).ToArray();
             _serviceProvider = serviceProvider;
         }
@@ -35,7 +33,7 @@ namespace CommandLineParser.DependencyInjection
                 : new Parser(configuration))
             {
                 var result = _commandLineOptionTypes.Count() == 1 && _commandLineOptionTypes.All(i => !i.GetCustomAttributes<VerbAttribute>().Any())
-                    ? parser.ParseArguments<object>(() => _commandLineOptions.First(), args)
+                    ? parser.ParseArguments(() => Activator.CreateInstance(_commandLineOptionTypes.First()), args)
                     : parser.ParseArguments(args, _commandLineOptionTypes);
                 if (result.Tag == ParserResultType.Parsed)
                 {
