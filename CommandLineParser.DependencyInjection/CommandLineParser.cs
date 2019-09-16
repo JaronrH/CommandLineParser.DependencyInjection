@@ -27,23 +27,26 @@ namespace CommandLineParser.DependencyInjection
         /// <returns>Result [code].</returns>
         public TResult ParseArguments(string[] args, Action<ParserSettings> configuration)
         {
-            var parser = configuration == null
+            using (var parser = configuration == null
                 ? new Parser()
-                : new Parser(configuration);
-            var result = parser.ParseArguments(args, _commandLineOptions.Select(i => i.GetType()).ToArray());
-            if (result.Tag == ParserResultType.Parsed)
+                : new Parser(configuration))
             {
-                var type =
-                    ExecuteCommandLineOptionsInterfaceType.MakeGenericType(result.TypeInfo.Current, typeof(TResult));
-                var methodType = type.GetMethod("Execute");
-                var executingService = _serviceProvider.GetRequiredService(type);
-                if (result is Parsed<object> parsed)
-                    return (TResult) methodType.Invoke(executingService, new[] {parsed.Value});
+                var result = parser.ParseArguments(args, _commandLineOptions.Select(i => i.GetType()).ToArray());
+                if (result.Tag == ParserResultType.Parsed)
+                {
+                    var type =
+                        ExecuteCommandLineOptionsInterfaceType.MakeGenericType(result.TypeInfo.Current,
+                            typeof(TResult));
+                    var methodType = type.GetMethod("Execute");
+                    var executingService = _serviceProvider.GetRequiredService(type);
+                    if (result is Parsed<object> parsed)
+                        return (TResult)methodType.Invoke(executingService, new[] { parsed.Value });
+                }
+                var service = _serviceProvider.GetService<IExecuteParsingFailure<TResult>>();
+                return service == null
+                    ? default(TResult)
+                    : service.Execute(args, (result as NotParsed<object>)?.Errors ?? Enumerable.Empty<Error>());
             }
-            var service = _serviceProvider.GetService<IExecuteParsingFailure<TResult>>();
-            return service == null
-                ? default(TResult)
-                : service.Execute(args, (result as NotParsed<object>)?.Errors ?? Enumerable.Empty<Error>());
         }
     }
 }
