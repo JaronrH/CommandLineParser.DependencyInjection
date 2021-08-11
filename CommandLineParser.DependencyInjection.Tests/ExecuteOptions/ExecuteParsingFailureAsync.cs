@@ -1,20 +1,22 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommandLine;
 using CommandLineParser.DependencyInjection.Interfaces;
 
 namespace CommandLineParser.DependencyInjection.Tests.ExecuteOptions
 {
-    class ExecuteParsingFailure : IExecuteParsingFailure<string>
+    class ExecuteParsingFailureAsync : IExecuteParsingFailureAsync<string>
     {
-        #region Implementation of IExecuteParsingFailure<out string>
+        #region Implementation of IExecuteParsingFailureAsync<string>
 
         /// <summary>
-        /// Execute Command Synchronously.
+        /// Execute Command Asynchronously.
         /// </summary>
         /// <param name="args">Arguments that were passed into the parser.</param>
         /// <param name="errors">Errors as reported from the parser.</param>
         /// <returns>Result</returns>
-        public string Execute(string[] args, IEnumerable<Error> errors) => $"Unable to parse \"{string.Join(' ', args)}\".";
+        public async Task<string> ExecuteAsync(string[] args, IEnumerable<Error> errors) => $"Unable to parse \"{string.Join(' ', args)}\" ASYNC.";
+
         #endregion
     }
 }

@@ -1,28 +1,29 @@
+using System.Threading.Tasks;
 using CommandLineParser.DependencyInjection.Interfaces;
 using CommandLineParser.DependencyInjection.Tests.Options;
 using CommandLineParser.DependencyInjection.Tests.Services;
 
 namespace CommandLineParser.DependencyInjection.Tests.ExecuteOptions
 {
-    class ExecuteAskOptions : IExecuteCommandLineOptions<AskOptions, string>
+    class ExecuteAskOptionsAsync : IExecuteCommandLineOptionsAsync<AskOptionsAsync, string>
     {
         private readonly DoYouLikeService _doYouLikeService;
 
-        public ExecuteAskOptions(DoYouLikeService doYouLikeService)
+        public ExecuteAskOptionsAsync(DoYouLikeService doYouLikeService)
         {
             _doYouLikeService = doYouLikeService;
         }
 
-        #region Implementation of IExecuteCommandLineOptions<in AskOptions,out string>
+        #region Implementation of IExecuteCommandLineOptionsAsync<in AskOptionsAsync,string>
 
         /// <summary>
-        /// Execute Command Synchronously.
+        /// Execute Command Asynchronously.
         /// </summary>
         /// <param name="options">Command Line Options</param>
         /// <returns>Result</returns>
-        public string Execute(AskOptions options)
+        public Task<string> ExecuteAsync(AskOptionsAsync options)
         {
-            return _doYouLikeService.DoILikeThis(options.DoYouLike, options.Like, false);
+            return Task.FromResult(_doYouLikeService.DoILikeThis(options.DoYouLike, options.Like, true));
         }
 
         #endregion

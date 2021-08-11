@@ -3,12 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Microsoft Dependency Injection extensions for CommandLineParser (https://github.com/commandlineparser/commandline)</Description>
-    <PackageReleaseNotes>Updated CommandLineParser (2.8.0) and Scutor (3.3.0).
-Changed target to .Net Standard 2.1</PackageReleaseNotes>
+    <PackageReleaseNotes>Added support for Async parsing/execution.</PackageReleaseNotes>
     <Product>CommandLineParser.DependencyInjection</Product>
     <PackageId>CommandLineParser.DependencyInjection</PackageId>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Company>CommandLineParser.DependencyInjection</Company>
     <Authors>CommandLineParser.DependencyInjection</Authors>

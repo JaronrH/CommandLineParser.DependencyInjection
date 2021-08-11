@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using CommandLineParser.DependencyInjection.Interfaces;
 using CommandLineParser.DependencyInjection.Tests.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,18 @@ namespace CommandLineParser.DependencyInjection.Tests
             var service = ServiceProvider.GetRequiredService<ICommandLineParser<string>>();
             Assert.Equal("I do not like them, Sam I Am! I do not like Green Eggs and Ham.", service.ParseArguments(new[] { "ask", "Green Eggs and Ham" }));
             Assert.Equal("Yes, I do like Green Eggs and Ham! Thank you, Thank you Sam I Am!", service.ParseArguments(new[] { "ask", "Green Eggs and Ham", "--like", "true" }));
+            Assert.Equal("I do not like them, Sam I Am! I do not like ASYNC Green Eggs and Ham.", service.ParseArguments(new[] { "askAsync", "Green Eggs and Ham" }));
+            Assert.Equal("Yes, I do like ASYNC Green Eggs and Ham! Thank you, Thank you Sam I Am!", service.ParseArguments(new[] { "askAsync", "Green Eggs and Ham", "--like", "true" }));
+        }
+
+        [Fact]
+        public async Task AskOptionsExecutionAsyncTest()
+        {
+            var service = ServiceProvider.GetRequiredService<ICommandLineParser<string>>();
+            Assert.Equal("I do not like them, Sam I Am! I do not like Green Eggs and Ham.", await service.ParseArgumentsAsync(new[] { "ask", "Green Eggs and Ham" }));
+            Assert.Equal("Yes, I do like Green Eggs and Ham! Thank you, Thank you Sam I Am!", await service.ParseArgumentsAsync(new[] { "ask", "Green Eggs and Ham", "--like", "true" }));
+            Assert.Equal("I do not like them, Sam I Am! I do not like ASYNC Green Eggs and Ham.", await service.ParseArgumentsAsync(new[] { "askAsync", "Green Eggs and Ham" }));
+            Assert.Equal("Yes, I do like ASYNC Green Eggs and Ham! Thank you, Thank you Sam I Am!", await service.ParseArgumentsAsync(new[] { "askAsync", "Green Eggs and Ham", "--like", "true" }));
         }
 
         [Fact]
@@ -34,6 +47,13 @@ namespace CommandLineParser.DependencyInjection.Tests
         {
             var service = ServiceProvider.GetRequiredService<ICommandLineParser<string>>();
             Assert.Equal("Unable to parse \"-filename testfile.txt\".", service.ParseArguments(new[] { "-filename", "testfile.txt" }));
+        }
+
+        [Fact]
+        public async Task OptionsExecutionFailureAsyncTest()
+        {
+            var service = ServiceProvider.GetRequiredService<ICommandLineParser<string>>();
+            Assert.Equal("Unable to parse \"-filename testfile.txt\" ASYNC.", await service.ParseArgumentsAsync(new[] { "-filename", "testfile.txt" }));
         }
 
         [Fact]
@@ -45,7 +65,7 @@ namespace CommandLineParser.DependencyInjection.Tests
             using (var writer = new StringWriter())
             {
                 service.ParseArguments(new string[0], o => o.HelpWriter = writer);
-                Assert.Equal($"{name} {version}\r\nCopyright (C) 2021 JetBrains s.r.o.\r\n\r\nERROR(S):\r\n  No verb selected.\r\n\r\n  ask        Ask a question.\r\n\r\n  help       Display more information on a specific command.\r\n\r\n  version    Display version information.\r\n\r\n", writer.ToString());
+                Assert.Equal($"{name} {version}\r\nCopyright (C) 2021 JetBrains s.r.o.\r\n\r\nERROR(S):\r\n  No verb selected.\r\n\r\n  ask         Ask a question.\r\n\r\n  askAsync    Ask a question ASYNC.\r\n\r\n  help        Display more information on a specific command.\r\n\r\n  version     Display version information.\r\n\r\n", writer.ToString());
             }
             using (var writer = new StringWriter())
             {
