@@ -8,7 +8,7 @@ new ServiceCollection() // Create Service Collection
         .AddLogging(c => c.AddConsole()) // Add Console Logging
     .BuildServiceProvider() // Build Service Provider
         .GetRequiredService<ICommandLineParser<int>>() // Get Parser Service
-            .ParseArguments(args, -1) // Call Parser with Arguments (Will have Options as well as and ExecuteOptions from DI)
+            .ParseArguments(args, -1) // Call Parser with Arguments (Options and ExecuteOptions will be loaded from DI as needed)
     ;
 
 public class Options: ICommandLineOptions
