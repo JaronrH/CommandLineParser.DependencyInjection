@@ -15,7 +15,7 @@ namespace CommandLineParser.DependencyInjection.Tests.ExecuteOptions
         /// <param name="args">Arguments that were passed into the parser.</param>
         /// <param name="errors">Errors as reported from the parser.</param>
         /// <returns>Result</returns>
-        public async Task<string> ExecuteAsync(string[] args, IEnumerable<Error> errors) => $"Unable to parse \"{string.Join(' ', args)}\" ASYNC.";
+        public Task<string> ExecuteAsync(string[] args, IEnumerable<Error> errors) => Task.FromResult($"Unable to parse \"{string.Join(' ', args)}\" ASYNC.");
 
         #endregion
     }

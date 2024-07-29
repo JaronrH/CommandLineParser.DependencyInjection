@@ -1,6 +1,4 @@
-﻿using CommandLine;
-
-namespace CommandLineParser.DependencyInjection.Interfaces
+﻿namespace CommandLineParser.DependencyInjection.Interfaces
 {
     /// <summary>
     /// Command Line Interface.

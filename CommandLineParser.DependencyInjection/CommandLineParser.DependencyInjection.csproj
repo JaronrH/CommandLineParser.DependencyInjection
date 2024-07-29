@@ -6,16 +6,26 @@
     <PackageReleaseNotes>Added support for Async parsing/execution.</PackageReleaseNotes>
     <Product>CommandLineParser.DependencyInjection</Product>
     <PackageId>CommandLineParser.DependencyInjection</PackageId>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.1.1</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Company>CommandLineParser.DependencyInjection</Company>
     <Authors>CommandLineParser.DependencyInjection</Authors>
+      <PackageReadmeFile>readme.md</PackageReadmeFile>
+      <PackageLicenseFile>license.txt</PackageLicenseFile>
+      <Copyright>Jaron Horst</Copyright>
+      <PackageProjectUrl>https://github.com/JaronrH/CommandLineParser.DependencyInjection</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/JaronrH/CommandLineParser.DependencyInjection</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Scrutor" Version="3.3.0" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="Scrutor" Version="4.2.2" />
   </ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\readme.md" Pack="true" PackagePath="\" />
+		<None Include="..\license.txt" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>

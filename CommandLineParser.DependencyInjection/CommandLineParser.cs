@@ -71,7 +71,7 @@ namespace CommandLineParser.DependencyInjection
                     methodType = type.GetMethod("ExecuteAsync");
                     executingService = _serviceProvider.GetService(type);
                     if (executingService != null && parsed != null)
-                        return AsyncHelper.RunSync(async () => (TResult)(await methodType.InvokeAsync(executingService, new[] { parsed.Value })));
+                        return AsyncHelper.RunSync(async () => await methodType.InvokeAsync<TResult>(executingService, new[] { parsed.Value }));
                 }
 
                 // Throw exception if Parser ran but no service was found to handle the results.
@@ -123,7 +123,7 @@ namespace CommandLineParser.DependencyInjection
                 var methodType = type.GetMethod("ExecuteAsync");
                 var executingService = _serviceProvider.GetService(type);
                 if (executingService != null && parsed != null)
-                    return (TResult)(await methodType.InvokeAsync(executingService, new[] { parsed.Value }));
+                    return await methodType.InvokeAsync<TResult>(executingService, new[] { parsed.Value });
 
                 // Look for Async?
                 if (allowSyncImplementations)
