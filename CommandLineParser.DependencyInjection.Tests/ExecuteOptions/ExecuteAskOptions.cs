@@ -2,29 +2,18 @@ using CommandLineParser.DependencyInjection.Interfaces;
 using CommandLineParser.DependencyInjection.Tests.Options;
 using CommandLineParser.DependencyInjection.Tests.Services;
 
-namespace CommandLineParser.DependencyInjection.Tests.ExecuteOptions
+namespace CommandLineParser.DependencyInjection.Tests.ExecuteOptions;
+
+class ExecuteAskOptions(DoYouLikeService doYouLikeService) : IExecuteCommandLineOptions<AskOptions, string>
 {
-    class ExecuteAskOptions : IExecuteCommandLineOptions<AskOptions, string>
-    {
-        private readonly DoYouLikeService _doYouLikeService;
+    #region Implementation of IExecuteCommandLineOptions<in AskOptions,out string>
 
-        public ExecuteAskOptions(DoYouLikeService doYouLikeService)
-        {
-            _doYouLikeService = doYouLikeService;
-        }
+    /// <summary>
+    /// Execute Command Synchronously.
+    /// </summary>
+    /// <param name="options">Command Line Options</param>
+    /// <returns>Result</returns>
+    public string Execute(AskOptions options) => doYouLikeService.DoILikeThis(options.DoYouLike, options.Like, false);
 
-        #region Implementation of IExecuteCommandLineOptions<in AskOptions,out string>
-
-        /// <summary>
-        /// Execute Command Synchronously.
-        /// </summary>
-        /// <param name="options">Command Line Options</param>
-        /// <returns>Result</returns>
-        public string Execute(AskOptions options)
-        {
-            return _doYouLikeService.DoILikeThis(options.DoYouLike, options.Like, false);
-        }
-
-        #endregion
-    }
+    #endregion
 }

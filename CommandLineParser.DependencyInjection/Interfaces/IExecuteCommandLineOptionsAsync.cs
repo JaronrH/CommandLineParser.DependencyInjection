@@ -1,19 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
-namespace CommandLineParser.DependencyInjection.Interfaces
+namespace CommandLineParser.DependencyInjection.Interfaces;
+
+/// <summary>
+/// Execute Command Line Asynchronously.
+/// </summary>
+/// <typeparam name="TCommandLineOptions">Command Line Options this executor handles.</typeparam>
+/// <typeparam name="TResult">Results</typeparam>
+public interface IExecuteCommandLineOptionsAsync<in TCommandLineOptions, TResult> where TCommandLineOptions : ICommandLineOptions
 {
     /// <summary>
-    /// Execute Command Line Asynchronously.
+    /// Execute Command Asynchronously.
     /// </summary>
-    /// <typeparam name="TCommandLineOptions">Command Line Options this executor handles.</typeparam>
-    /// <typeparam name="TResult">Results</typeparam>
-    public interface IExecuteCommandLineOptionsAsync<in TCommandLineOptions, TResult> where TCommandLineOptions : ICommandLineOptions
-    {
-        /// <summary>
-        /// Execute Command Asynchronously.
-        /// </summary>
-        /// <param name="options">Command Line Options</param>
-        /// <returns>Result</returns>
-        Task<TResult> ExecuteAsync(TCommandLineOptions options);
-    }
+    /// <param name="options">Command Line Options</param>
+    /// <param name="ctx">Cancellation Token</param>
+    /// <returns>Result</returns>
+    Task<TResult> ExecuteAsync(TCommandLineOptions options, CancellationToken ctx = default);
 }

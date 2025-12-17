@@ -4,17 +4,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 new ServiceCollection() // Create Service Collection
-        .AddCommandLineParser(typeof(Options).Assembly) // Add CommandLineParser registrations to DI
-        .AddLogging(c => c.AddConsole()) // Add Console Logging
+    .AddCommandLineParser(typeof(Options).Assembly) // Add CommandLineParser registrations to DI
+    .AddLogging(c => c.AddConsole().SetMinimumLevel(LogLevel.Debug)) // Add Console Logging
     .BuildServiceProvider() // Build Service Provider
-        .GetRequiredService<ICommandLineParser<int>>() // Get Parser Service
-            .ParseArguments(args, -1) // Call Parser with Arguments (Options and ExecuteOptions will be loaded from DI as needed)
+    .GetRequiredService<ICommandLineParser<int>>() // Get Parser Service
+    .ParseArguments(args, -1) // Call Parser with Arguments (Options and ExecuteOptions will be loaded from DI as needed)
     ;
 
 public class Options: ICommandLineOptions
 {
     [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
     public bool Verbose { get; set; }
+
+    [Option('i', "treatAsInvalid", Required = false, HelpText = "Set to true to trigger validation error.")]
+    public bool TreatAsInvalid { get; set; }
+}
+
+public class OptionsValidator : IValidateCommandLineOptions<Options>
+{
+    public bool Validate(Options options) => !options.TreatAsInvalid;
 }
 
 public class ExecuteOptions(ILogger<ExecuteOptions> log) : IExecuteCommandLineOptions<Options, int>

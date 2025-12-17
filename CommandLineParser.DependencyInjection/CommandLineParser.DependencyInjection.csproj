@@ -7,7 +7,7 @@
     <Product>CommandLineParser.DependencyInjection</Product>
     <PackageId>CommandLineParser.DependencyInjection</PackageId>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.1</Version>
+    <Version>1.5</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Company>CommandLineParser.DependencyInjection</Company>
     <Authors>CommandLineParser.DependencyInjection</Authors>
@@ -16,11 +16,14 @@
       <Copyright>Jaron Horst</Copyright>
       <PackageProjectUrl>https://github.com/JaronrH/CommandLineParser.DependencyInjection</PackageProjectUrl>
       <RepositoryUrl>https://github.com/JaronrH/CommandLineParser.DependencyInjection</RepositoryUrl>
+      <LangVersion>latest</LangVersion>
+      <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Scrutor" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+    <PackageReference Include="Scrutor" Version="7.0.0" />
   </ItemGroup>
 
 	<ItemGroup>

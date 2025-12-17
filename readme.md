@@ -1,20 +1,31 @@
+Snippet
+
 # CommandLineParser.DependencyInjection
  
 This is a simple wrapper around the amazing [commandlineparser/commandline](https://github.com/commandlineparser/commandline) library which adds support for Microsoft's DI with help from [Scrutor](https://github.com/khellang/Scrutor).  This is done by allow the following interfaces to be implemented which DI will find and user for executing the commandlineparser.
-
+ 
 |Interface|Description  |
 |--|--|
 |ICommandLineOptions | This is an empty interface that is used solely for DI to find options! Make a class with [Options](https://github.com/commandlineparser/commandline/wiki/Option-Attribute) just like the CommandLineParser library instructs! |
 |ICommandLineParser< TResult >| This is the DI Service you will use to access the [Parser](https://github.com/commandlineparser/commandline/wiki/Getting-Started) and execute the relevant DI Service for IExecuteCommandLineOptions/IExecuteCommandLineOptionsAsync.  It has the ability to run both synchronously or asynchronously. |
 |IExecuteCommandLineOptions<TCommandLineOptions, TResult>| Interface that implements Execute(options) synchronously with the Parser's Command Line Options.  |
-|IExecuteCommandLineOptionsAsync<TCommandLineOptions, TResult>| Interface that implements ExecuteAsync(options) asynchronously with the Parser's Command Line Options. |
-|IExecuteParsingFailure<TResult>| If no Options/Handler found, this is called synchronously  with the executed arguments array and parser errors to handle the inability to handle the command line input arguments. |
+|IExecuteCommandLineOptionsAsync<TCommandLineOptions, TResult>| Interface that implements ExecuteAsync(options, ctx) asynchronously with the Parser's Command Line Options. |
+|IExecuteParsingFailure< TResult >| If no Options/Handler found, this is called synchronously  with the executed arguments array and parser errors to handle the inability to handle the command line input arguments. |
 |IExecuteParsingFailureAsync< TResult >|If no Options/Handler found, this is called asynchronously with the executed arguments array and parser errors to handle the inability to handle the command line input arguments.   |
+|IValidateCommandLineOptions< TCommandLineOptions >|Synchronous Validator for Command Line Options.|
+|IValidateCommandLineOptionsAsync< TCommandLineOptions >|Asynchronous Validator for Command Line Options.| 
 
+There are also some service that are available to be used or replaced.
+|Interface|Description  |
+|--|--|
+|ICommandLineParser | Master command line processor which will parse the arguments, find the best options, validate the options (if available) and execute the appropriate handler (IExecuteCommandLineOptions<TCommandLineOptions, TResult>/IExecuteCommandLineOptionsAsync<TCommandLineOptions, TResult>).
+|ICommandLineParserSyncExecutionFactory and ICommandLineParserAsyncExecutionFactory| Services used to actually get the service to be used and execute it with the options from the CommandLineParser.  Default implementation uses DI to get the service it needs and run it.  Also takes care of executing whatever handles a parsing error.|
+|ICommandLineOptionsValidator|Validator that calls IValidateCommandLineOptionsAsync< TCommandLineOptions >/IValidateCommandLineOptions< TCommandLineOptions > to handle validation.
+ 
 ## Example
-
-Here is an example of the QuickStart from  [commandlineparser/commandline](https://github.com/commandlineparser/commandline) implemented using DI.  In this case though, we're writing to Microsoft's Logging ILogger that is getting injected using DI instead of writing directly to console!
-
+ 
+Here is an example of the QuickStart from  [commandlineparser/commandline](https://github.com/commandlineparser/commandline) implemented using DI.  In this case though, we're writing to Microsoft's Logging ILogger that is getting injected using DI instead of writing directly to console!  Also, when the logger is present, debug information can be logged as well.
+ 
 ```
 using CommandLine;
 using CommandLineParser.DependencyInjection.Interfaces;
@@ -22,17 +33,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
  
 new ServiceCollection() // Create Service Collection
-        .AddCommandLineParser(typeof(Options).Assembly) // Add CommandLineParser registrations to DI
-        .AddLogging(c => c.AddConsole()) // Add Console Logging
+    .AddCommandLineParser(typeof(Options).Assembly) // Add CommandLineParser registrations to DI
+    .AddLogging(c => c.AddConsole().SetMinimumLevel(LogLevel.Debug)) // Add Console Logging
     .BuildServiceProvider() // Build Service Provider
-        .GetRequiredService<ICommandLineParser<int>>() // Get Parser Service
-            .ParseArguments(args, -1) // Call Parser with Arguments (Options and ExecuteOptions will be loaded from DI as needed)
+    .GetRequiredService<ICommandLineParser<int>>() // Get Parser Service
+    .ParseArguments(args, -1) // Call Parser with Arguments (Options and ExecuteOptions will be loaded from DI as needed)
     ;
  
 public class Options: ICommandLineOptions
 {
     [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
     public bool Verbose { get; set; }
+ 
+    [Option('i', "treatAsInvalid", Required = false, HelpText = "Set to true to trigger validation error.")]
+    public bool TreatAsInvalid { get; set; }
+}
+ 
+public class OptionsValidator : IValidateCommandLineOptions<Options>
+{
+    public bool Validate(Options options) => !options.TreatAsInvalid;
 }
  
 public class ExecuteOptions(ILogger<ExecuteOptions> log) : IExecuteCommandLineOptions<Options, int>
@@ -63,14 +82,13 @@ public class ExecuteOptions(ILogger<ExecuteOptions> log) : IExecuteCommandLineOp
     #endregion
 }
 ```
-
-
+ 
+ 
 ### Unit Tests
-
+ 
 ***See the Test's project for example.***  
-
+ 
 The Tests project has 3 folders:
  - Options: These are the CommandLineOptions, exactly how the [commandlineparser/commandline](https://github.com/commandlineparser/commandline)  library defines them, with the ICommandLineOptions interface added for DI discovering.  *The only difference is that one is used for calling async instead of sync in tests.*
  - ExecuteAskOptions: These are both Sync and Async dummy implementations of services that handle the AskOptions as well as handle Parsing failures.
  - Services: Dummy service that returns a string based on the arguments provided.
-
